@@ -16,4 +16,4 @@ App to visualize a neural network learn, made in cpp using Eigen for faster calc
 
 ---
 
-![Example](assets/readmeimage.png)
+![Example](assets/example.png)
