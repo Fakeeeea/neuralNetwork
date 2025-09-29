@@ -15,3 +15,5 @@ App to visualize a neural network learn, made in cpp using Eigen for faster calc
 - Customizable Training Data: Input your own datasets to test different scenarios.
 
 ---
+
+![Example](assets/readmeimage.png)
