@@ -12,7 +12,6 @@ App to visualize a neural network learn, made in cpp using Eigen for faster calc
 - Interactive Interface: Adjust parameters like learning rate, number of layers, and neurons per layer.
 - Multiple Datasets: Choose between different datasets.
 - Cost Function Tracking: Monitor the cost function's progression during training.
-- Customizable Training Data: Input your own datasets to test different scenarios.
 
 ---
 
