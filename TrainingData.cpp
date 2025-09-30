@@ -330,7 +330,7 @@ std::vector<TrainingData> TrainingData::generateCubeData(int dataSize) {
 
     std::random_device rd;
     std::default_random_engine rng{ rd() };
-    std::uniform_real_distribution<double> rotation(M_PI / 16, M_PI_4);
+    std::uniform_real_distribution<double> rotation(M_PI_4 * 0.25, M_PI_4);
     std::normal_distribution<double> noise(0.0, 0.001);
 
     double xAngle = rotation(rng);
@@ -379,3 +379,74 @@ std::vector<TrainingData> TrainingData::generateCubeData(int dataSize) {
     }
     return data;
 }
+
+std::vector<TrainingData> TrainingData::generatePyramidData(int dataSize) {
+    std::vector<TrainingData> data;
+
+    int pointsPerEdge = dataSize / 8;
+    data.reserve(pointsPerEdge * 8);
+
+    std::vector<Eigen::Vector3d> vertices = {
+            {0.2,0.2,0.0}, {0.8,0.2,0.0}, {0.8,0.8,0.0}, {0.2,0.8,0.0},
+            {0.5,0.5,0.8}
+    };
+
+    Eigen::Vector3d center = {0.5, 0.5, 0.16};
+
+    std::vector<std::pair<int,int>> edges = {
+            {0,1}, {1,2}, {2,3}, {3,0},
+            {0,4}, {1,4}, {2,4}, {3,4}
+    };
+
+    std::random_device rd;
+    std::default_random_engine rng{ rd() };
+    std::uniform_real_distribution<double> rotation(M_PI_4 * 0.25, M_PI_4);
+    std::normal_distribution<double> noise(0.0, 0.001);
+
+    double xAngle = rotation(rng);
+    double yAngle = rotation(rng);
+
+    Eigen::Matrix3d rotX, rotY;
+
+    rotX << 1, 0, 0,
+            0, cos(xAngle), -sin(xAngle),
+            0, sin(xAngle), cos(xAngle);
+
+    rotY << cos(yAngle), 0, sin(yAngle),
+            0, 1, 0,
+            -sin(yAngle), 0, cos(yAngle);
+
+    Eigen::Matrix3d rotationMatrix = rotY * rotX;
+
+    for(auto& v : vertices) {
+        v -= center;
+        v = rotationMatrix * v;
+        v += center;
+    }
+
+    for(int i = 0; i < 8; ++i) {
+
+        Eigen::VectorXd label(8);
+        label.setZero();
+        label[i] = 1;
+
+        Eigen::Vector3d start = vertices[edges[i].first];
+        Eigen::Vector3d end = vertices[edges[i].second];
+
+        for(int j = 0; j < pointsPerEdge; ++j) {
+            Eigen::VectorXd input(3);
+
+            double t = (double) j / (pointsPerEdge - 1);
+
+            Eigen::Vector3d point = start + t * (end - start);
+
+            input[0] = point[0] + noise(rng);
+            input[1] = point[1] + noise(rng);
+            input[2] = point[2] + noise(rng);
+
+            data.emplace_back(input, label);
+        }
+    }
+    return data;
+}
+

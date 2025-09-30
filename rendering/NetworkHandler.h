@@ -40,7 +40,8 @@ public:
         LINEAR,
         CIRCLE,
         MOONS,
-        CUBE
+        CUBE,
+        PYRAMID
     };
 
     enum DataType {

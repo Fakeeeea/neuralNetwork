@@ -2,7 +2,7 @@
 <html lang="en-us">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, charset=UTF-8">
   <title>Neural Network Visualization</title>
   <style>
     html,body {
@@ -15,14 +15,33 @@
     canvas {
       display: block;
       background-color: black;
-    }</style>
+    }
+
+    #rotateOverlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      justify-content: center;
+      align-content: center;
+      background-color: black;
+      color: white;
+      font-size: 1.2rem;
+      z-index: 9999;
+      text-align: center;
+      padding: 1rem;
+    }
+
+  </style>
 
 </head>
 <body>
+
+<div id="rotateOverlay"> Please rotate your device. </div>
 <canvas id="canvas" tabindex="-1"></canvas>
 
 <script>
   const canvas = document.getElementById('canvas');
+  const overlay = document.getElementById('rotateOverlay');
 
   canvas.addEventListener("contextmenu", function(e) {
     e.preventDefault();
@@ -31,8 +50,34 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
   }
+
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
+
+  function isLandscape() {
+    if (screen.orientation && screen.orientation.type) {
+      return screen.orientation.type.startsWith('landscape');
+    }
+    return window.innerWidth > window.innerHeight;
+  }
+
+  function handleOrientation() {
+    const landscape = isLandscape();
+
+    if (!landscape) {
+      overlay.style.display = 'flex';
+      canvas.style.display = 'none';
+    } else {
+      const wasPortrait = overlay.style.display === 'flex';
+      overlay.style.display = 'none';
+      canvas.style.display = 'block';
+      if (wasPortrait) location.reload();
+    }
+  }
+
+  handleOrientation();
+  window.addEventListener("orientationchange", handleOrientation);
+
 
   canvas.addEventListener('webglcontextlost', (e) => {
     alert('WebGL context lost. Reload the page.');

@@ -17,6 +17,10 @@
 class Renderer {
 private:
 
+#ifdef __EMSCRIPTEN__
+    ImVec2 touchPanStart;
+#endif
+
     struct Rect{
         ImVec2 pos;
         ImVec2 size;
@@ -47,7 +51,7 @@ private:
     int networkType = 0;
     int costType = 1;
     int miniBatchSize = 10;
-    int epochNumber = 30;
+    int epochNumber = 1000;
     int stepSize = 50;
     float learningRate = 0.5;
     std::vector<int> layerSizes = {2,3,2};
@@ -88,7 +92,7 @@ private:
 
 public:
 
-    bool quit = true;
+    bool quit = false;
 
     void init(std::string& title);
     void handleEvents();

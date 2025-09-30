@@ -90,7 +90,27 @@ void Renderer::handleEvents() {
                         updateSizes();
                         updateLocations();
                         break;
+                } break;
+#ifdef __EMSCRIPTEN__
+            case SDL_FINGERDOWN:
+                touchPanStart.x = e.tfinger.x;
+                touchPanStart.y = e.tfinger.y;
+                break;
+            case SDL_FINGERMOTION: {
+
+                int drawableW, drawableH;
+                SDL_GL_GetDrawableSize(window, &drawableW, &drawableH);
+
+                float fingerx = e.tfinger.x * drawableW;
+                float fingery = e.tfinger.y * drawableH;
+
+                if(fingerx > networkViewport.pos.x && fingerx < networkViewport.size.x && fingery > networkViewport.pos.y && fingery < networkViewport.size.y) {
+                    pan.x -= (touchPanStart.x * drawableW - fingerx) * 0.5f;
+                    pan.y -= (touchPanStart.y * drawableH - fingery) * 0.5f;
                 }
+                break;
+            }
+#endif
         }
     }
 }
@@ -240,31 +260,41 @@ void Renderer::drawSettings() {
 }
 
 void Renderer::drawNetworkTypeSelector() {
-    static const char* networkTypes[]{"XOR", "SPIRAL", "LINEAR", "CIRCLE", "MOONS", "CUBE"};
-    //static const char* networkTypes[]{"MNIST Images", "XOR", "SPIRAL", "LINEAR", "CIRCLE", "MOONS", "CUBE"};
+    static const char* networkTypes[]{"XOR", "SPIRAL", "LINEAR", "CIRCLE", "MOONS", "CUBE", "PYRAMID"};
+    //static const char* networkTypes[]{"MNIST Images", "XOR", "SPIRAL", "LINEAR", "CIRCLE", "MOONS", "CUBE", "PYRAMID"};
     if(ImGui::Combo("Network type", &networkType, networkTypes, IM_ARRAYSIZE(networkTypes))) {
         switch(networkType) {
             /*case NetworkHandler::MNIST: layerSizes = {784, 30, 10};
                                         networkHandler.loadData("train-images.idx3-ubyte", "train-labels.idx1-ubyte", "t10k-images.idx3-ubyte", "t10k-labels.idx1-ubyte", 0.2, true);
                                         break;*/
-            case NetworkHandler::XOR: layerSizes = {2, 3, 2};
-                                        networkHandler.loadData(NetworkHandler::XOR);
-                                        break;
-            case NetworkHandler::SPIRAL: layerSizes = {2, 4, 4, 2};
-                                        networkHandler.loadData(NetworkHandler::SPIRAL);
-                                        break;
-            case NetworkHandler::LINEAR: layerSizes = {2, 3, 2};
-                                        networkHandler.loadData(NetworkHandler::LINEAR);
-                                        break;
-            case NetworkHandler::CIRCLE: layerSizes = {2, 4, 2, 2};
-                                        networkHandler.loadData(NetworkHandler::CIRCLE);
-                                        break;
-            case NetworkHandler::MOONS: layerSizes = {2, 3, 2};
-                                        networkHandler.loadData(NetworkHandler::MOONS);
-                                        break;
-            case NetworkHandler::CUBE: layerSizes = {3, 8, 16, 12};
-                                        networkHandler.loadData(NetworkHandler::CUBE);
-                                        break;
+            case NetworkHandler::XOR:
+                layerSizes = {2, 3, 2};
+                networkHandler.loadData(NetworkHandler::XOR);
+                break;
+            case NetworkHandler::SPIRAL:
+                layerSizes = {2, 4, 4, 2};
+                networkHandler.loadData(NetworkHandler::SPIRAL);
+                break;
+            case NetworkHandler::LINEAR:
+                layerSizes = {2, 3, 2};
+                networkHandler.loadData(NetworkHandler::LINEAR);
+                break;
+            case NetworkHandler::CIRCLE:
+                layerSizes = {2, 4, 2, 2};
+                networkHandler.loadData(NetworkHandler::CIRCLE);
+                break;
+            case NetworkHandler::MOONS:
+                layerSizes = {2, 3, 2};
+                networkHandler.loadData(NetworkHandler::MOONS);
+                break;
+            case NetworkHandler::CUBE:
+                layerSizes = {3, 8, 16, 12};
+                networkHandler.loadData(NetworkHandler::CUBE);
+                break;
+            case NetworkHandler::PYRAMID:
+                layerSizes = {3, 5, 10, 8};
+                networkHandler.loadData(NetworkHandler::PYRAMID);
+                break;
         }
 
         networkHandler.createNetwork(layerSizes, costType, regularizationFactor, learningRate, regularize);
@@ -341,6 +371,10 @@ void Renderer::drawNetworkControls() {
 
     if(ImGui::Button("Reset graphs", ImVec2(-FLT_MIN, 0))) {
         resetGraphs();
+    }
+
+    if(ImGui::Button("Return to network", ImVec2(-FLT_MIN, 0))) {
+        pan = ImVec2(networkViewport.size.x * 0.3, networkViewport.size.y * 0.5);
     }
 }
 

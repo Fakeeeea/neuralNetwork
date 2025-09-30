@@ -79,6 +79,7 @@ void NetworkHandler::loadData(int type) {
         case CIRCLE: fullData = TrainingData::generateCircleData(400 + 400 * (validationAmount + testAmount)); break;
         case MOONS: fullData = TrainingData::generateMoonsData(400 + 400 * (validationAmount + testAmount)); break;
         case CUBE: fullData = TrainingData::generateCubeData(1000 + 1000 * (validationAmount + testAmount)); break;
+        case PYRAMID: fullData = TrainingData::generatePyramidData(1000 + 1000 * (validationAmount + testAmount)); break;
         default: fullData = TrainingData::generateXorData(400 + 400 * (validationAmount + testAmount)); break;
     }
 

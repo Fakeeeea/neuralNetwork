@@ -27,6 +27,7 @@ public:
     static std::vector<TrainingData> generateCircleData(int dataSize);
     static std::vector<TrainingData> generateMoonsData(int dataSize);
     static std::vector<TrainingData> generateCubeData(int dataSize);
+    static std::vector<TrainingData> generatePyramidData(int dataSize);
 };
 
 #endif //NEURAL_NETWORK_TRAININGDATA_H

@@ -31,5 +31,5 @@ std::pair<float*, int> Graph::getData() {
 }
 
 void Graph::resetGraph() {
-    std::fill(_data.begin(), _data.end(), 0.0);
+    _currentSize = 0;
 }
